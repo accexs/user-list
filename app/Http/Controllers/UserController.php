@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -23,11 +24,11 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreUserRequest  $request
      *
      * @return \App\Http\Resources\UserResource
      */
-    public function store(Request $request): UserResource
+    public function store(StoreUserRequest $request): UserResource
     {
         $user = User::make($request->all());
         $user->save();
@@ -50,12 +51,12 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreUserRequest  $request
      * @param  int  $id
      *
      * @return \App\Http\Resources\UserResource
      */
-    public function update(Request $request, int $id): UserResource
+    public function update(StoreUserRequest $request, int $id): UserResource
     {
         $user = User::findOrfail($id);
         $user->update($request->all());

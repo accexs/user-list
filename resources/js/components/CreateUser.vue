@@ -1,14 +1,24 @@
 <template>
     <div>
-        <div class="flex w-full border-2 border-gray-300 h-18 p-4 rounded-sm space-x-3">
+        <div class="w-full border-2 border-gray-300 h-18 p-4 rounded-sm">
             <form @submit.prevent="createUser">
-                <input v-model="user.name" type="text" required
-                       class="px-4 py-1 border focus:ring-2 focus:ring-blue-300 focus:border-blue-300 border-gray-300 rounded-md"
-                       placeholder="Name">
-                <input v-model="user.email" type="email" required
-                       class="px-4 py-1 border focus:ring-2 focus:ring-blue-300 focus:border-blue-300 border-gray-300 rounded-md"
-                       placeholder="Email">
-                <button class="rounded-md text-white bg-blue-500 px-3 py-1">Submit</button>
+                <div class="flex space-x-3">
+                    <div class="flex-col">
+                        <input v-model="user.name" type="text" required
+                               @change="validationErrors.name = false"
+                               class="px-4 py-1 border focus:ring-2 focus:ring-blue-300 focus:border-blue-300 border-gray-300 rounded-md"
+                               placeholder="Name">
+                        <p class="text-red-700" v-if="validationErrors.name" v-for="error in validationErrors.name">{{ error }}</p>
+                    </div>
+                    <div class="flex-col">
+                        <input v-model="user.email" type="email" required
+                               @change="validationErrors.email = false"
+                               class="px-4 py-1 border focus:ring-2 focus:ring-blue-300 focus:border-blue-300 border-gray-300 rounded-md"
+                               placeholder="Email">
+                        <p class="text-red-700 text-sm" v-if="validationErrors.email" v-for="error in validationErrors.email">{{ error }}</p>
+                    </div>
+                    <button class="rounded-md text-white bg-blue-500 px-3 py-1 max-h-9">Submit</button>
+                </div>
             </form>
         </div>
     </div>
@@ -28,8 +38,9 @@ export default {
         return {
             user: {
                 name: '',
-                email: ''
-            }
+                email: '',
+            },
+            validationErrors: {},
         }
     },
     mounted() {
@@ -45,14 +56,22 @@ export default {
                         this.$vueEventBus.$emit('userCreated', response.data.data)
                         this.$vueEventBus.$emit('closeUpdateModal');
                     })
-                    .catch(error => console.log(error))
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.validationErrors = error.response.data.errors;
+                        }
+                    })
             } else {
                 axios.post('/api/users', this.user)
                     .then(response => {
                         this.$vueEventBus.$emit('userCreated', response.data.data)
                         this.user = {name: '', email: ''}
                     })
-                    .catch(error => console.log(error))
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.validationErrors = error.response.data.errors;
+                        }
+                    })
             }
         },
         getUser() {

@@ -5,8 +5,6 @@
  */
 
 import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
 import Index from './Index';
 require('./bootstrap');
 
